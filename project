@@ -1,0 +1,98 @@
+# PROBLEM STATEMENT: Take any Dataset of your choice ,perform EDA(Exploratory Data Analysis) 
+#and apply a suitable Classifier,Regressor or Clusterer and calculate the accuracy of the model.
+
+#DATA SET : SOCIAL NETWORK ADS
+# https://raw.githubusercontent.com/ameenmanna8824/DATASETS/main/Social_Network_Ads.csv
+
+# EDA(Exploratory Data Analysis)
+import pandas as pd
+import numpy as np
+import seaborn as sns
+data=pd.read_csv('https://raw.githubusercontent.com/ameenmanna8824/DATASETS/main/Social_Network_Ads.csv')
+data
+
+#1 understandig the data
+data.head()
+data.tail()
+data.shape
+data.columns
+data.nunique()
+data['Age'].unique()
+data['Purchased'].unique()
+
+#cleaning the data
+
+data.isnull().sum()
+Social_Network=data.drop(['Gender','User ID'],axis=1)
+Social_Network.head()
+
+#3 relatioonship analysis
+
+corelation = Social_Network.corr()
+sns.heatmap(corelation, xticklabels=corelation.columns,yticklabels=corelation.columns,annot=True)
+sns.pairplot(Social_Network)
+sns.relplot(x='Age',y='EstimatedSalary',hue='Purchased',data=Social_Network)
+sns.distplot(Social_Network['Age'])
+sns.distplot(Social_Network['EstimatedSalary'])
+sns.distplot(Social_Network['Purchased'])
+sns.catplot(x='Age',kind='box',data=Social_Network)
+sns.catplot(x='EstimatedSalary',kind='box',data=Social_Network)
+
+# APPLYING CLASSIFIER FOR CALCULATING THE ACCURACY OF THE MODEL
+
+#1. TAKE A DATA AND CREATE DATAFRAME
+import pandas as pd
+df=pd.read_csv('https://raw.githubusercontent.com/ameenmanna8824/DATASETS/main/Social_Network_Ads.csv')
+df
+#2.EDA 
+df.info() #It gives the information about our dataframe.
+df.shape # 400 rows and cols
+df.size #It tells us the total no of elements in df
+
+#Purchased : 0 and 1
+#0 - Not Purchased 
+#1 - Purchased
+#Input - Age and Estimated Salary
+#Output - Purchased
+
+#3.DATA VISUALISATION - NOT REQUIRED HERE
+
+#4.Divide the data into input and output
+#input(x) is 2 dimensional and output(y) is 1 dimensional
+#var.iloc[row slicing,column slicing] for both rows and columns to look array 2 d
+x=df.iloc[:,2:4].values # . values convert our df in array
+x
+y=df.iloc[:,4].values
+y
+#5.Train and Test Variables
+from sklearn.model_selection import train_test_split
+x_train,x_test,y_train,y_test=train_test_split(x,y,random_state=0)
+
+#6.NORMALISATION/SCALING(TO BE DONE ONLY FOR INPUTS) and applicable on MULTIVARIATE DATASETS
+from sklearn.preprocessing import MinMaxScaler
+scaler=MinMaxScaler()
+x_train=scaler.fit_transform(x_train)
+x_test=scaler.fit_transform(x_test)
+
+#7.Apply a CLASSIFIER, regressor or clusterer
+from sklearn.linear_model import LogisticRegression
+model=LogisticRegression()
+
+#8.Fitting the model
+model.fit(x_train,y_train)
+
+#9.Predict the output
+y_pred=model.predict(x_test)
+y_pred
+y_test #ACTUAL OUTPUT VALUES
+
+#10.Accuracy
+from sklearn.metrics import accuracy_score
+accuracy_score(y_pred,y_test)*100
+# The Accuracy of above model is 89.0 %
+
+#INDIVIDUAL PREDICTION
+a= scaler.transform([[25,50000]])# Age=25 , EstimatedSalary=50000
+a
+model.predict(a)
+# array([0]), it means he did'nt purchased.
